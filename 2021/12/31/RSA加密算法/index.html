@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/blogger/images/cafecat.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/blogger/images/cafecat.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/blogger/images/cafecat.png">
+  <link rel="mask-icon" href="/blogger/images/cafecat.svg" color="#222">
+
+<link rel="stylesheet" href="/blogger/css/main.css">
+
+
+<link rel="stylesheet" href="/blogger/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"liang-shenlin.gitee.io","root":"/blogger/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="1、RSA加密简介​    RSA是由罗纳德·李维斯特（Ron Rivest）、阿迪·萨莫尔（Adi Shamir）和伦纳德·阿德曼（Leonard Adleman）在1977年一起提出的.PSA对极大整数做因数分解的难度决定了 RSA 算法的可靠性。 ​    RSA是目前应用最广泛地一种非对称秘码体制。 2、生成RSA公钥和私钥123456789101112131415161718192021">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RSA加密算法">
+<meta property="og:url" content="http://liang-shenlin.gitee.io/blogger/2021/12/31/RSA%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95/index.html">
+<meta property="og:site_name" content="E0005105">
+<meta property="og:description" content="1、RSA加密简介​    RSA是由罗纳德·李维斯特（Ron Rivest）、阿迪·萨莫尔（Adi Shamir）和伦纳德·阿德曼（Leonard Adleman）在1977年一起提出的.PSA对极大整数做因数分解的难度决定了 RSA 算法的可靠性。 ​    RSA是目前应用最广泛地一种非对称秘码体制。 2、生成RSA公钥和私钥123456789101112131415161718192021">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/liang-shenlin/resource/raw/master/img/202112311731510.png">
+<meta property="article:published_time" content="2021-12-31T08:42:34.000Z">
+<meta property="article:modified_time" content="2021-12-31T09:37:19.412Z">
+<meta property="article:author" content="梁申麟">
+<meta property="article:tag" content="openssl">
+<meta property="article:tag" content="c&#x2F;c++">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/liang-shenlin/resource/raw/master/img/202112311731510.png">
+
+<link rel="canonical" href="http://liang-shenlin.gitee.io/blogger/2021/12/31/RSA%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>RSA加密算法 | E0005105</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+
+   <canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;" ></canvas> 
+   <script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
+   <script type="text/javascript" src="/js/src/fireworks.js"></script>
+
+
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/blogger/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">E0005105</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">记录工作中遇到的一些问题</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/blogger/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/blogger/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/blogger/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">2</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/blogger/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">0</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/blogger/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">8</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://liang-shenlin.gitee.io/blogger/2021/12/31/RSA%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blogger/images/cafecat.png">
+      <meta itemprop="name" content="梁申麟">
+      <meta itemprop="description" content="吃好喝好，长生不老。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="E0005105">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          RSA加密算法
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-12-31 16:42:34 / 修改时间：17:37:19" itemprop="dateCreated datePublished" datetime="2021-12-31T16:42:34+08:00">2021-12-31</time>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="1、RSA加密简介"><a href="#1、RSA加密简介" class="headerlink" title="1、RSA加密简介"></a>1、RSA加密简介</h3><p>​    <strong>RSA是由<a href="https://link.zhihu.com/?target=https://zh.wikipedia.org/wiki/%E7%BD%97%E7%BA%B3%E5%BE%B7%C2%B7%E6%9D%8E%E7%BB%B4%E6%96%AF%E7%89%B9">罗纳德·李维斯特</a>（Ron Rivest）、<a href="https://link.zhihu.com/?target=https://zh.wikipedia.org/wiki/%E9%98%BF%E8%BF%AA%C2%B7%E8%90%A8%E8%8E%AB%E5%B0%94">阿迪·萨莫尔</a>（Adi Shamir）和<a href="https://link.zhihu.com/?target=https://zh.wikipedia.org/wiki/%E4%BC%A6%E7%BA%B3%E5%BE%B7%C2%B7%E9%98%BF%E5%BE%B7%E6%9B%BC">伦纳德·阿德曼</a>（Leonard Adleman）在1977年一起提出的.PSA对极大整数做<a href="https://link.zhihu.com/?target=https://zh.wikipedia.org/wiki/%E5%9B%A0%E6%95%B0%E5%88%86%E8%A7%A3">因数分解</a>的难度决定了 RSA 算法的可靠性。</strong></p>
+<p>​    <strong>RSA是目前应用最广泛地一种非对称秘码体制。</strong></p>
+<h3 id="2、生成RSA公钥和私钥"><a href="#2、生成RSA公钥和私钥" class="headerlink" title="2、生成RSA公钥和私钥"></a>2、生成RSA公钥和私钥</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">GeneratorRsaKey::RsaKeyPairGen</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;   </span><br><span class="line">    <span class="built_in">RSA_KEY_FREE</span>(rsa);</span><br><span class="line">	<span class="keyword">if</span> (!(Ret = <span class="built_in">RSA_generate_key_ex</span>(rsa, <span class="number">2048</span>, bne, <span class="literal">NULL</span>)))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">RSA_KEY_FREE</span>(rsa);</span><br><span class="line">        <span class="keyword">return</span> ERR_GENERATE_KEY;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    FILE* Fp = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="keyword">if</span> (!rsa || !RSAPriKeyFileName) <span class="comment">//RSAPriKeyFileName为保存rsa私钥的文件路径</span></span><br><span class="line">        <span class="keyword">return</span> ERR_ARGUMENT;</span><br><span class="line">    <span class="keyword">if</span> (!(Fp = <span class="built_in">fopen</span>(RSAPriKeyFileName, <span class="string">&quot;wb&quot;</span>)))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> ERR_OPENFILE;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (!<span class="built_in">PEM_write_RSAPrivateKey</span>(Fp, rsa, <span class="literal">NULL</span>, <span class="literal">NULL</span>, <span class="number">0</span>, <span class="literal">NULL</span>, <span class="number">0</span>)) <span class="comment">//写入私钥</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">fclose</span>(Fp);</span><br><span class="line">        <span class="keyword">return</span> ERR_WRITEPRIVATE;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">fclose</span>(Fp);</span><br><span class="line">        </span><br><span class="line">	<span class="keyword">if</span> (!rsa || !RSAPubKeyFileName)</span><br><span class="line">        <span class="keyword">return</span> ERR_ARGUMENT;</span><br><span class="line">    <span class="keyword">if</span> (!(Fp = <span class="built_in">fopen</span>(RSAPubKeyFileName, <span class="string">&quot;wb&quot;</span>))) <span class="comment">//RSAPubKeyFileName为保存rsa私钥的文件路径</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> ERR_OPENFILE;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!<span class="built_in">PEM_write_RSA_PUBKEY</span>(Fp, rsa))  <span class="comment">//写入公钥</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">fclose</span>(Fp);</span><br><span class="line">        <span class="keyword">return</span> ERR_WRITEPUBLIC;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">fclose</span>(Fp);</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3、通过RSA私钥进行签名"><a href="#3、通过RSA私钥进行签名" class="headerlink" title="3、通过RSA私钥进行签名"></a>3、通过RSA私钥进行签名</h3><p><strong>其中，from为要进行加密的数据，flen为数据长度，EncryptedStr指向加密后的数据，EncryptedLen为加密后数据长度。</strong></p>
+<p><strong><em>RSA_PKCS1_PADDING</em>为填充模式，有好几种。</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">GeneratorRsaKey::PrivateKeyEncrypt</span><span class="params">(<span class="keyword">uint8_t</span>* from, <span class="keyword">int</span> flen)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//---------------从文件中读取私钥并生成rsa------------------------------</span></span><br><span class="line">    ENGINE* e = <span class="literal">NULL</span>;</span><br><span class="line">    EVP_PKEY* pkey = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="keyword">uint8_t</span> pad;</span><br><span class="line">    <span class="keyword">if</span> (!bio_err) bio_err = <span class="built_in">BIO_new_fp</span>(stderr, BIO_NOCLOSE);</span><br><span class="line">    <span class="built_in">ERR_load_crypto_strings</span>();</span><br><span class="line">    <span class="built_in">OpenSSL_add_all_algorithms</span>();</span><br><span class="line">    pad = RSA_PKCS1_PADDING;</span><br><span class="line">    <span class="keyword">if</span> (!(pkey = <span class="built_in">load_key</span>(bio_err, RSAPriKeyFileName, FORMAT_PEM, <span class="number">0</span>,</span><br><span class="line">        PassWord, e, <span class="string">&quot;Private Key&quot;</span>)))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> ERR_OPENFILE;</span><br><span class="line">    &#125;</span><br><span class="line">    rsa = <span class="built_in">EVP_PKEY_get1_RSA</span>(pkey);</span><br><span class="line">    <span class="built_in">EVP_PKEY_free</span>(pkey);</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    <span class="comment">//---------------RSA加密------------------------------</span></span><br><span class="line">    <span class="comment">//RSA_print_fp(stdout, rsa, 11);</span></span><br><span class="line">    <span class="keyword">int</span> Ret = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> ((<span class="keyword">int</span>)(EncryptedLen = <span class="built_in">RSA_private_encrypt</span>(flen, from, EncryptedStr, rsa, RSA_PKCS1_PADDING)) &lt; <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        Ret = ERR_PRIVATE_ENCRYPT;</span><br><span class="line">        <span class="keyword">goto</span> Failed;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">Failed:</span><br><span class="line">    EncryptedLen = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">return</span> Ret;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="4、通过RSA公钥进行验签"><a href="#4、通过RSA公钥进行验签" class="headerlink" title="4、通过RSA公钥进行验签"></a>4、通过RSA公钥进行验签</h3><p><strong>其中，from为rsa加密后的数据，flen为数据长度，DecryptedStr指向解密后的数据，DecryptedLen为解密后数据长度。可以通过对比内存中DecryptedStr所指数据与上面步骤3中加密前的数据是否一致来判断解密是否成功</strong>。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">GeneratorRsaKey::PublicKeyDecrypt</span><span class="params">(<span class="keyword">uint8_t</span>* from, <span class="keyword">int</span> flen)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">uint32_t</span> Size = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> Ret = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (!rsa)</span><br><span class="line">        <span class="keyword">return</span> ERR_ARGUMENT;</span><br><span class="line">    Size = <span class="built_in">RSA_size</span>(rsa);</span><br><span class="line">    <span class="keyword">if</span> ((DecryptedLen = <span class="built_in">RSA_public_decrypt</span>(flen, from, DecryptedStr, rsa, RSA_PKCS1_PADDING)) &lt; <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;RSA_public_decrypt\r\n&quot;</span>);</span><br><span class="line">        Ret = ERR_DECRYPT;</span><br><span class="line">        <span class="keyword">goto</span> Failed;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">Failed:</span><br><span class="line">    EncryptedLen = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">return</span> Ret;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="5、RSA加密解密的三种填充模式"><a href="#5、RSA加密解密的三种填充模式" class="headerlink" title="5、RSA加密解密的三种填充模式"></a>5、RSA加密解密的三种填充模式</h3><p><img src="https://gitee.com/liang-shenlin/resource/raw/master/img/202112311731510.png" alt="image-20211231173137396"></p>
+<h5 id="其中，本代码中采用用RSA-PKCS1-PADDING填充模式"><a href="#其中，本代码中采用用RSA-PKCS1-PADDING填充模式" class="headerlink" title="其中，本代码中采用用RSA_PKCS1_PADDING填充模式"></a>其中，本代码中采用用RSA_PKCS1_PADDING填充模式</h5><p>​        <strong>此填充模式是最常用的填充模式，在此填充模式下输入的长度受加密钥的长度限制，输入的最大长度为加密钥的位数k-11。如果公钥的长度为1024位即128字节，那么输入的长度最多为128-11=117字节。如果长度小于117就需要填充。如果输入T的长度为55字节，填充后的块为EM，则EM格式如下：</strong></p>
+<ul>
+<li><p>​                                                        <strong>EM= 0x00 || BT || PS || 0x00 || T</strong></p>
+<p><strong>· 首字节填充0x00，确保加密块的大小小于加密钥（可见第四部分加密要求）</strong></p>
+<p><strong>· BT仅一个字节，并只有三种选项0x00，0x01，0x02。其中0x02表示公钥加密，0x00，0x01表示私钥加密</strong></p>
+<p><strong>· PS表示填充字段，根据BT类型有不同的情况。1.对于公钥加密的情况（即BT=0x02），PS为随机生成的且不含0的数。2.BT=0x00，PS填充的值为0x00（只有输入T不以0x00开头时，BT才为0x00，否则会有歧义）。3.BT=0x01，PS填充0xFF。PS的长度为128-3-len(T)=70字节，所以PS随机数长度至少为8个字节</strong></p>
+<p><strong>· 而后填充0x00用于区分填充字段和输入信息</strong></p>
+<p><strong>· T为实际的输入</strong></p>
+</li>
+</ul>
+<p><strong>其余两种填充方式可查看其他博客中对填充模式的讲解（<a target="_blank" rel="noopener" href="https://www.jianshu.com/p/0fc6631500e3">https://www.jianshu.com/p/0fc6631500e3</a>）</strong></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/blogger/tags/openssl/" rel="tag"># openssl</a>
+              <a href="/blogger/tags/c-c/" rel="tag"># c/c++</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/blogger/2021/12/31/ECDSA%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95/" rel="prev" title="ECDSA加密算法">
+      <i class="fa fa-chevron-left"></i> ECDSA加密算法
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81RSA%E5%8A%A0%E5%AF%86%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">1、RSA加密简介</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81%E7%94%9F%E6%88%90RSA%E5%85%AC%E9%92%A5%E5%92%8C%E7%A7%81%E9%92%A5"><span class="nav-number">2.</span> <span class="nav-text">2、生成RSA公钥和私钥</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E3%80%81%E9%80%9A%E8%BF%87RSA%E7%A7%81%E9%92%A5%E8%BF%9B%E8%A1%8C%E7%AD%BE%E5%90%8D"><span class="nav-number">3.</span> <span class="nav-text">3、通过RSA私钥进行签名</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4%E3%80%81%E9%80%9A%E8%BF%87RSA%E5%85%AC%E9%92%A5%E8%BF%9B%E8%A1%8C%E9%AA%8C%E7%AD%BE"><span class="nav-number">4.</span> <span class="nav-text">4、通过RSA公钥进行验签</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5%E3%80%81RSA%E5%8A%A0%E5%AF%86%E8%A7%A3%E5%AF%86%E7%9A%84%E4%B8%89%E7%A7%8D%E5%A1%AB%E5%85%85%E6%A8%A1%E5%BC%8F"><span class="nav-number">5.</span> <span class="nav-text">5、RSA加密解密的三种填充模式</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%85%B6%E4%B8%AD%EF%BC%8C%E6%9C%AC%E4%BB%A3%E7%A0%81%E4%B8%AD%E9%87%87%E7%94%A8%E7%94%A8RSA-PKCS1-PADDING%E5%A1%AB%E5%85%85%E6%A8%A1%E5%BC%8F"><span class="nav-number">5.0.1.</span> <span class="nav-text">其中，本代码中采用用RSA_PKCS1_PADDING填充模式</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="梁申麟"
+      src="/blogger/images/cafecat.png">
+  <p class="site-author-name" itemprop="name">梁申麟</p>
+  <div class="site-description" itemprop="description">吃好喝好，长生不老。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/blogger/archives/">
+        
+          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/blogger/tags/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/liangshenlin" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;liangshenlin" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:1065434172@qq.com" title="E-Mail → mailto:1065434172@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2021 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">梁申麟</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">11k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">10 分钟</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,0' opacity='0.5' zIndex='-1' count='150' src="/blogger/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/blogger/lib/anime.min.js"></script>
+  <script src="/blogger/lib/velocity/velocity.min.js"></script>
+  <script src="/blogger/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/blogger/js/utils.js"></script>
+
+<script src="/blogger/js/motion.js"></script>
+
+
+<script src="/blogger/js/schemes/pisces.js"></script>
+
+
+<script src="/blogger/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
+<!-- ҳ����С���� -->
+<script type="text/javascript" src="/js/src/clicklove.js"></script>

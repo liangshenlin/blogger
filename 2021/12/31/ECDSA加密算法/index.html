@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/blogger/images/cafecat.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/blogger/images/cafecat.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/blogger/images/cafecat.png">
+  <link rel="mask-icon" href="/blogger/images/cafecat.svg" color="#222">
+
+<link rel="stylesheet" href="/blogger/css/main.css">
+
+
+<link rel="stylesheet" href="/blogger/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"liang-shenlin.gitee.io","root":"/blogger/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="1、什么是ECDSA？ECDSA的全名是Elliptic Curve DSA，即椭圆曲线DSA。它是Digital Signature Algorithm (DSA)应用了椭圆曲线加密算法的变种。椭圆曲线算法的原理很复杂，但是具有很好的公开密钥算法特性，通过公钥无法逆向获得私钥。 2、生成ECDSA公钥和私钥其中，ECDSAPriKeyFileName、ECDSAPubKeyFileName为要保">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ECDSA加密算法">
+<meta property="og:url" content="http://liang-shenlin.gitee.io/blogger/2021/12/31/ECDSA%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95/index.html">
+<meta property="og:site_name" content="E0005105">
+<meta property="og:description" content="1、什么是ECDSA？ECDSA的全名是Elliptic Curve DSA，即椭圆曲线DSA。它是Digital Signature Algorithm (DSA)应用了椭圆曲线加密算法的变种。椭圆曲线算法的原理很复杂，但是具有很好的公开密钥算法特性，通过公钥无法逆向获得私钥。 2、生成ECDSA公钥和私钥其中，ECDSAPriKeyFileName、ECDSAPubKeyFileName为要保">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-12-31T08:42:15.000Z">
+<meta property="article:modified_time" content="2021-12-31T09:02:32.363Z">
+<meta property="article:author" content="梁申麟">
+<meta property="article:tag" content="openssl">
+<meta property="article:tag" content="c&#x2F;c++">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://liang-shenlin.gitee.io/blogger/2021/12/31/ECDSA%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>ECDSA加密算法 | E0005105</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+
+   <canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;" ></canvas> 
+   <script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
+   <script type="text/javascript" src="/js/src/fireworks.js"></script>
+
+
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/blogger/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">E0005105</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">记录工作中遇到的一些问题</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/blogger/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/blogger/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/blogger/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">2</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/blogger/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">0</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/blogger/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">8</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://liang-shenlin.gitee.io/blogger/2021/12/31/ECDSA%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blogger/images/cafecat.png">
+      <meta itemprop="name" content="梁申麟">
+      <meta itemprop="description" content="吃好喝好，长生不老。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="E0005105">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ECDSA加密算法
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-12-31 16:42:15 / 修改时间：17:02:32" itemprop="dateCreated datePublished" datetime="2021-12-31T16:42:15+08:00">2021-12-31</time>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="1、什么是ECDSA？"><a href="#1、什么是ECDSA？" class="headerlink" title="1、什么是ECDSA？"></a>1、什么是ECDSA？</h3><p><strong>ECDSA的全名是Elliptic Curve DSA，即椭圆曲线DSA。它是Digital Signature Algorithm (DSA)应用了椭圆曲线加密算法的变种。椭圆曲线算法的原理很复杂，但是具有很好的公开密钥算法特性，通过公钥无法逆向获得私钥。</strong></p>
+<h3 id="2、生成ECDSA公钥和私钥"><a href="#2、生成ECDSA公钥和私钥" class="headerlink" title="2、生成ECDSA公钥和私钥"></a>2、生成ECDSA公钥和私钥</h3><p><strong>其中，ECDSAPriKeyFileName、ECDSAPubKeyFileName为要保存公钥和私钥的文件路径。</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">GeneratorRsaKey::CreateECDSAKey</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> Ret = <span class="number">0</span>;</span><br><span class="line">    EC_KEY* ec_key = <span class="literal">NULL</span>;;</span><br><span class="line">    EC_GROUP* ec_group;</span><br><span class="line"></span><br><span class="line">    ec_key = <span class="built_in">EC_KEY_new</span>();<span class="comment">//通过调用EC_KEY_new（）来构造没有关联曲线的新EC_键。新创建的EC_键的引用计数最初设置为1。</span></span><br><span class="line">                        </span><br><span class="line">    <span class="keyword">if</span> (!ec_key)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Error：ec_key is err!\n&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> Ret;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ec_group = <span class="built_in">EC_GROUP_new_by_curve_name</span>(NID_secp256k1);</span><br><span class="line">    <span class="comment">//为了构造内置曲线，请使用函数EC_GROUP_new_by_curve_name（）并提供要构造的曲线的nid。</span></span><br><span class="line">    <span class="keyword">if</span> (!ec_group)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Error：ec_group is err\n&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> Ret;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//asn1_标志值用于确定曲线编码是使用显式参数还是使用asn1 OID的命名曲线：许多应用程序仅支持后一种形式。</span></span><br><span class="line">    <span class="built_in">EC_GROUP_set_asn1_flag</span>(ec_group, OPENSSL_EC_NAMED_CURVE);</span><br><span class="line">    <span class="comment">//如果asn1_标志为OPENSSL_EC_NAMED_CURVE，则使用命名曲线形式，并且参数必须具有相应的命名曲线NID集</span></span><br><span class="line">    <span class="built_in">EC_GROUP_set_point_conversion_form</span>(ec_group, POINT_CONVERSION_UNCOMPRESSED);<span class="comment">//获取曲线的点转换形式。</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (<span class="number">1</span> != <span class="built_in">EC_KEY_set_group</span>(ec_key, ec_group))<span class="comment">//通过调用EC_KEY_set_group（），可以将曲线与EC_KEY相关联。  </span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Error：EC_KEY_set_group err\n&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> Ret;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//EC_KEY_generate_KEY（）为提供的eckey对象生成新的公钥和私钥。在调用此函数之前，eckey必须有一个与之关联的EC_组对象.</span></span><br><span class="line">    <span class="comment">//私钥是一个随机整数（0&lt;priv_key&lt;order，其中order是EC_组对象的顺序）。公钥是曲线上的一个EC_点，通过曲线生成器乘以私钥计算得出。</span></span><br><span class="line">    <span class="keyword">if</span> (!<span class="built_in">EC_KEY_generate_key</span>(ec_key))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Error：EC_KEY_generate_key()  err\n&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> Ret;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//保存公钥</span></span><br><span class="line">    <span class="keyword">if</span> (!ECDSAPubKeyFileName)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">fprintf</span>(stderr, <span class="string">&quot;Cannot open file %s\r\n&quot;</span>, ECDSAPubKeyFileName);</span><br><span class="line">        <span class="keyword">return</span> ERR_OPENFILE;</span><br><span class="line">    &#125;</span><br><span class="line">    Ret = <span class="built_in">WritePublicKeyToFile</span>(ECDSAPubKeyFileName, ec_key);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//保存私钥</span></span><br><span class="line">    <span class="keyword">if</span> (!ECDSAPriKeyFileName)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">fprintf</span>(stderr, <span class="string">&quot;Cannot open file %s\r\n&quot;</span>, ECDSAPriKeyFileName);</span><br><span class="line">        <span class="keyword">return</span> ERR_OPENFILE;</span><br><span class="line">    &#125;</span><br><span class="line">    Ret = <span class="built_in">WritePrivateKeyToFile</span>(ECDSAPriKeyFileName, ec_key, ec_group);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (ec_key)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">EC_KEY_free</span>(ec_key);</span><br><span class="line">        ec_key = <span class="literal">NULL</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">GeneratorRsaKey::WritePublicKeyToFile</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* Path, EC_KEY* pKey)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> Ret = <span class="number">0</span>;</span><br><span class="line">    BIO* pBioFile = <span class="built_in">BIO_new_file</span>(Path, <span class="string">&quot;wb+&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!pBioFile)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Error：pBioFile err \n&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> Ret;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (<span class="number">1</span> != <span class="built_in">PEM_write_bio_EC_PUBKEY</span>(pBioFile, pKey))  <span class="comment">//写入公钥</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Error：PEM_write_bio_EC_PUBKEY err\n&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> Ret;</span><br><span class="line">    &#125;</span><br><span class="line">    Ret = ECDSA_SUCESS;</span><br><span class="line">    <span class="built_in">BIO_free</span>(pBioFile);</span><br><span class="line">    <span class="keyword">return</span> Ret;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">GeneratorRsaKey::WritePrivateKeyToFile</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* Path, EC_KEY* pKey, EC_GROUP* ec_group)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> Ret = <span class="number">0</span>;</span><br><span class="line">    BIO* pBioFile = <span class="built_in">BIO_new_file</span>(Path, <span class="string">&quot;wb+&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!pBioFile)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Error：pBioFile err \n&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> Ret;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">PEM_write_bio_ECPKParameters</span>(pBioFile, ec_group);</span><br><span class="line">    <span class="keyword">if</span> (<span class="number">1</span> != <span class="built_in">PEM_write_bio_ECPrivateKey</span>(pBioFile, pKey, <span class="literal">NULL</span>, <span class="literal">NULL</span>, <span class="number">0</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>))  <span class="comment">//写入私钥</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Error：PEM_write_bio_ECPrivateKey err\n&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> Ret;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Ret = ECDSA_SUCESS;</span><br><span class="line">    <span class="built_in">BIO_free</span>(pBioFile);</span><br><span class="line">    <span class="keyword">return</span> Ret;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3、通过ECDSA私钥进行签名"><a href="#3、通过ECDSA私钥进行签名" class="headerlink" title="3、通过ECDSA私钥进行签名"></a>3、通过ECDSA私钥进行签名</h3><p><strong>其中，hash、hashsize为其他算法（sha256/SM3）所生成的32位摘要。</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">GeneratorRsaKey::ECDSAPrivkeySign</span><span class="params">(<span class="keyword">uint8_t</span>* hash_value, <span class="keyword">uint32_t</span> hash_size)</span> </span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span>* buffer;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> buf_len;</span><br><span class="line">    <span class="keyword">int</span> Ret = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> size = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">//-------------ECDSA加密------------------------------</span></span><br><span class="line">    EC_KEY* ec_key;</span><br><span class="line">    BIO* pBioKeyFile;</span><br><span class="line">    pBioKeyFile = <span class="built_in">BIO_new_file</span>(ECDSAPriKeyFileName, <span class="string">&quot;rb&quot;</span>);</span><br><span class="line">    ec_key = <span class="built_in">PEM_read_bio_ECPrivateKey</span>(pBioKeyFile, <span class="literal">NULL</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>);  <span class="comment">//读取私钥</span></span><br><span class="line">    <span class="keyword">if</span> (!ec_key)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;read ec_key err!\n&quot;</span>);</span><br><span class="line">        Ret = ERR_ECDSA;</span><br><span class="line">        <span class="keyword">goto</span> Failed;</span><br><span class="line">    &#125;</span><br><span class="line">    buf_len = <span class="built_in">ECDSA_size</span>(ec_key);<span class="comment">//获取ECC密钥大小字节数</span></span><br><span class="line">    buffer = (<span class="keyword">unsigned</span> <span class="keyword">char</span>*)<span class="built_in">malloc</span>(buf_len); <span class="comment">//分配内存，buffer用来保存签名后的数据</span></span><br><span class="line">     <span class="comment">//签名固定为 r（35字节）+ s（35字节）+v （1字节）=71字节。</span></span><br><span class="line">    <span class="keyword">if</span> (!(Ret=<span class="built_in">ECDSA_sign</span>(<span class="number">0</span>, Hash, HashSize, buffer, &amp;buf_len, ec_key))) </span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;ECDSA_sign is err!\n&quot;</span>);</span><br><span class="line">        Ret = ERR_ECDSA;</span><br><span class="line">        <span class="keyword">goto</span> Failed;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (ec_key)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">EC_KEY_free</span>(ec_key);</span><br><span class="line">        ec_key = <span class="literal">NULL</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (pBioKeyFile)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">BIO_free</span>(pBioKeyFile);</span><br><span class="line">        pBioKeyFile = <span class="literal">NULL</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">Failed:</span><br><span class="line">    <span class="keyword">return</span> Ret;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4、通过ECDSA公钥验签"><a href="#4、通过ECDSA公钥验签" class="headerlink" title="4、通过ECDSA公钥验签"></a>4、通过ECDSA公钥验签</h3><p><strong>其中，hash、hashsize为其他算法（sha256/SM3）所生成的32位摘要。</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">GeneratorRsaKey::ECDSAPubkeyVerify</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">char</span>* buffer, <span class="keyword">unsigned</span> <span class="keyword">int</span> buf_len)</span></span></span><br><span class="line"><span class="function"></span>&#123;   </span><br><span class="line">    <span class="keyword">int</span> Ret = <span class="number">0</span>;</span><br><span class="line">    EC_KEY* ec_key = <span class="literal">NULL</span>;</span><br><span class="line">    BIO* pBioKeyFile = <span class="literal">NULL</span>;</span><br><span class="line">    pBioKeyFile = <span class="built_in">BIO_new_file</span>(ECDSAPubKeyFileName, <span class="string">&quot;rb&quot;</span>);</span><br><span class="line">    ec_key = <span class="built_in">PEM_read_bio_EC_PUBKEY</span>(pBioKeyFile, <span class="literal">NULL</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>); <span class="comment">//从pem文件中读取公钥</span></span><br><span class="line">    <span class="keyword">if</span> (!ec_key)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;read pubkey failed!\n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    Ret = <span class="built_in">ECDSA_verify</span>(<span class="number">0</span>, Hash, HashSize, buffer, buf_len, ec_key); <span class="comment">//buffer为加密后的数据，buf_len为加密数据长度一般为71</span></span><br><span class="line">    <span class="keyword">if</span> (Ret == <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;ECDSA_verify failed!\n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (pBioKeyFile)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">BIO_free</span>(pBioKeyFile);</span><br><span class="line">        pBioKeyFile = <span class="literal">NULL</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (ec_key)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">EC_KEY_free</span>(ec_key);</span><br><span class="line">        ec_key = <span class="literal">NULL</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> Ret;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/blogger/tags/openssl/" rel="tag"># openssl</a>
+              <a href="/blogger/tags/c-c/" rel="tag"># c/c++</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/blogger/2021/12/31/%E5%9B%BD%E5%AF%86SM3%E6%91%98%E8%A6%81%E7%AE%97%E6%B3%95/" rel="prev" title="国密SM3摘要算法">
+      <i class="fa fa-chevron-left"></i> 国密SM3摘要算法
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/blogger/2021/12/31/RSA%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95/" rel="next" title="RSA加密算法">
+      RSA加密算法 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81%E4%BB%80%E4%B9%88%E6%98%AFECDSA%EF%BC%9F"><span class="nav-number">1.</span> <span class="nav-text">1、什么是ECDSA？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81%E7%94%9F%E6%88%90ECDSA%E5%85%AC%E9%92%A5%E5%92%8C%E7%A7%81%E9%92%A5"><span class="nav-number">2.</span> <span class="nav-text">2、生成ECDSA公钥和私钥</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E3%80%81%E9%80%9A%E8%BF%87ECDSA%E7%A7%81%E9%92%A5%E8%BF%9B%E8%A1%8C%E7%AD%BE%E5%90%8D"><span class="nav-number">3.</span> <span class="nav-text">3、通过ECDSA私钥进行签名</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4%E3%80%81%E9%80%9A%E8%BF%87ECDSA%E5%85%AC%E9%92%A5%E9%AA%8C%E7%AD%BE"><span class="nav-number">4.</span> <span class="nav-text">4、通过ECDSA公钥验签</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="梁申麟"
+      src="/blogger/images/cafecat.png">
+  <p class="site-author-name" itemprop="name">梁申麟</p>
+  <div class="site-description" itemprop="description">吃好喝好，长生不老。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/blogger/archives/">
+        
+          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/blogger/tags/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/liangshenlin" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;liangshenlin" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:1065434172@qq.com" title="E-Mail → mailto:1065434172@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2021 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">梁申麟</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">11k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">10 分钟</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,0' opacity='0.5' zIndex='-1' count='150' src="/blogger/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/blogger/lib/anime.min.js"></script>
+  <script src="/blogger/lib/velocity/velocity.min.js"></script>
+  <script src="/blogger/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/blogger/js/utils.js"></script>
+
+<script src="/blogger/js/motion.js"></script>
+
+
+<script src="/blogger/js/schemes/pisces.js"></script>
+
+
+<script src="/blogger/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
+<!-- ҳ����С���� -->
+<script type="text/javascript" src="/js/src/clicklove.js"></script>
