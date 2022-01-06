@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/blogger/images/cafecat.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/blogger/images/cafecat.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/blogger/images/cafecat.png">
+  <link rel="mask-icon" href="/blogger/images/cafecat.svg" color="#222">
+
+<link rel="stylesheet" href="/blogger/css/main.css">
+
+
+<link rel="stylesheet" href="/blogger/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"liang-shenlin.gitee.io","root":"/blogger/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="1、AES算法简介高级加密标准*(AES,Advanced Encryption Standard)*为最常见的对称加密算法(微信小程序加密传输就是用这个加密算法的)。对称加密算法也就是加密和解密用相同的密钥，具体的加密流程如下图：  2、AES的基本结构AES为分组密码，分组密码也就是把明文分成一组一组的，每组长度相等，每次加密一组数据，直到加密完整个明文。在AES标准规范中，分组长度只能是12">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AES和SM4加密算法">
+<meta property="og:url" content="http://liang-shenlin.gitee.io/blogger/2022/01/06/AES%E5%92%8CSM4%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95/index.html">
+<meta property="og:site_name" content="E0005105">
+<meta property="og:description" content="1、AES算法简介高级加密标准*(AES,Advanced Encryption Standard)*为最常见的对称加密算法(微信小程序加密传输就是用这个加密算法的)。对称加密算法也就是加密和解密用相同的密钥，具体的加密流程如下图：  2、AES的基本结构AES为分组密码，分组密码也就是把明文分成一组一组的，每组长度相等，每次加密一组数据，直到加密完整个明文。在AES标准规范中，分组长度只能是12">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/liang-shenlin/resource/raw/master/img/202201061611682.png">
+<meta property="og:image" content="https://gitee.com/liang-shenlin/resource/raw/master/img/202201061613312.png">
+<meta property="article:published_time" content="2022-01-06T07:54:02.000Z">
+<meta property="article:modified_time" content="2022-01-06T08:54:36.707Z">
+<meta property="article:author" content="梁申麟">
+<meta property="article:tag" content="openssl">
+<meta property="article:tag" content="c&#x2F;c++">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/liang-shenlin/resource/raw/master/img/202201061611682.png">
+
+<link rel="canonical" href="http://liang-shenlin.gitee.io/blogger/2022/01/06/AES%E5%92%8CSM4%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>AES和SM4加密算法 | E0005105</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+
+   <canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;" ></canvas> 
+   <script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
+   <script type="text/javascript" src="/js/src/fireworks.js"></script>
+
+
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/blogger/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">E0005105</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">记录工作中遇到的一些问题</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/blogger/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/blogger/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/blogger/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">2</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/blogger/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">0</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/blogger/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">9</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://liang-shenlin.gitee.io/blogger/2022/01/06/AES%E5%92%8CSM4%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blogger/images/cafecat.png">
+      <meta itemprop="name" content="梁申麟">
+      <meta itemprop="description" content="吃好喝好，长生不老。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="E0005105">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          AES和SM4加密算法
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-01-06 15:54:02 / 修改时间：16:54:36" itemprop="dateCreated datePublished" datetime="2022-01-06T15:54:02+08:00">2022-01-06</time>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.8k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="1、AES算法简介"><a href="#1、AES算法简介" class="headerlink" title="1、AES算法简介"></a>1、AES算法简介</h3><p><strong>高级加密标准*(AES,Advanced Encryption Standard)*为最常见的对称加密算法(微信小程序加密传输就是用这个加密算法的)。对称加密算法也就是加密和解密用相同的密钥，具体的加密流程如下图：</strong></p>
+<p><img src="https://gitee.com/liang-shenlin/resource/raw/master/img/202201061611682.png" alt="img"></p>
+<h3 id="2、AES的基本结构"><a href="#2、AES的基本结构" class="headerlink" title="2、AES的基本结构"></a>2、AES的基本结构</h3><p><strong>AES为分组密码，分组密码也就是把明文分成一组一组的，每组长度相等，每次加密一组数据，直到加密完整个明文。在AES标准规范中，分组长度只能是128位，也就是说，每个分组为16个字节（每个字节8位）。密钥的长度可以使用128位、192位或256位。密钥的长度不同，推荐加密轮数也不同，如下表所示：</strong></p>
+<p><img src="https://gitee.com/liang-shenlin/resource/raw/master/img/202201061613312.png" alt="image-20220106161301258"></p>
+<h3 id="3、AES的代码实现"><a href="#3、AES的代码实现" class="headerlink" title="3、AES的代码实现"></a>3、AES的代码实现</h3><h4 id="3-1-AES加密"><a href="#3-1-AES加密" class="headerlink" title="3.1 AES加密"></a>3.1 AES加密</h4><p>​    <strong>其中，<em>BinFilePath</em>位要加密的明文文件路径，<em>EncryFilePath</em>为加密后密文的输出路径。</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">unsigned</span> <span class="keyword">char</span> ivec[EVP_MAX_IV_LENGTH] =	<span class="comment">//AES中的IV只能为一个16字节的byte[]ivec的内容可以任意指定，但是加密和解密操作必须使用同样的数据</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="number">0x01</span>, <span class="number">0x23</span>, <span class="number">0x45</span>, <span class="number">0x67</span>, <span class="number">0x89</span>, <span class="number">0xAB</span>, <span class="number">0xCD</span>, <span class="number">0xEF</span>,</span><br><span class="line">    <span class="number">0xFE</span>, <span class="number">0xDC</span>, <span class="number">0xBA</span>, <span class="number">0x98</span>, <span class="number">0x76</span>, <span class="number">0x54</span>, <span class="number">0x32</span>, <span class="number">0x10</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">unsigned</span> <span class="keyword">char</span> key[<span class="number">16</span>] = <span class="comment">///&lt; key_data, 密钥内容, 至少16字节 由所选加密模式决定，我用的ecb_128故16字节</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="number">0x01</span>, <span class="number">0x23</span>, <span class="number">0x45</span>, <span class="number">0x67</span>, <span class="number">0x89</span>, <span class="number">0xAB</span>, <span class="number">0xCD</span>, <span class="number">0xEF</span>,</span><br><span class="line">    <span class="number">0xFE</span>, <span class="number">0xDC</span>, <span class="number">0xBA</span>, <span class="number">0x98</span>, <span class="number">0x76</span>, <span class="number">0x54</span>, <span class="number">0x32</span>, <span class="number">0x10</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">GeneratorRsaKey::AESEncrypt</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* BinFilePath, <span class="keyword">const</span> <span class="keyword">char</span>* EncryFilePath)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> indata[AES_BLOCK_SIZE];	<span class="comment">//AES_BLOCK_SIZE=16  存放每次读取的明文</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> outdata[AES_BLOCK_SIZE];	<span class="comment">//存放加密后的密文</span></span><br><span class="line"></span><br><span class="line">    FILE* fw, *fr;</span><br><span class="line">    <span class="keyword">int</span> ret = <span class="number">0</span>, len=<span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    fr = <span class="built_in">fopen</span>(BinFilePath, <span class="string">&quot;rb+&quot;</span>);</span><br><span class="line">    fw = <span class="built_in">fopen</span> (EncryFilePath, <span class="string">&quot;wb+&quot;</span>);</span><br><span class="line">    <span class="keyword">size_t</span> bytes_read, bytes_write;</span><br><span class="line"></span><br><span class="line">    EVP_CIPHER_CTX* ctx;</span><br><span class="line">    <span class="keyword">if</span> (!(ctx = <span class="built_in">EVP_CIPHER_CTX_new</span>()))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> ret;</span><br><span class="line">    &#125;</span><br><span class="line">	<span class="comment">//EVP_aes_128_cbc()选择加密模式为aes_128bit模式</span></span><br><span class="line">    <span class="keyword">if</span> (!(ret= <span class="built_in">EVP_EncryptInit_ex</span>(ctx, <span class="built_in">EVP_aes_128_cbc</span>(), <span class="literal">NULL</span>, key, ivec))) </span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> ret;</span><br><span class="line">    &#125;</span><br><span class="line"> 	</span><br><span class="line">    ret=<span class="built_in">EVP_CIPHER_CTX_set_padding</span>(ctx, EVP_PADDING_ZERO); <span class="comment">//设置填充模式 </span></span><br><span class="line">    <span class="comment">//可以设置在加密数据时对不够长的数据进行填充的方式，pad可以设置为以下几个:</span></span><br><span class="line">    <span class="comment">//in file openssl/evp.h</span></span><br><span class="line">    <span class="comment">//#define EVP_PADDING_PKCS7       1</span></span><br><span class="line">    <span class="comment">//#define EVP_PADDING_ISO7816_4   2</span></span><br><span class="line">    <span class="comment">//#define EVP_PADDING_ANSI923     3</span></span><br><span class="line">    <span class="comment">//#define EVP_PADDING_ISO10126    4</span></span><br><span class="line">    <span class="comment">//#define EVP_PADDING_ZERO        5</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">while</span> (<span class="number">1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        bytes_read = <span class="built_in">fread</span>(indata, <span class="number">1</span>, <span class="number">16</span>, fr); <span class="comment">//每次加密数据16个字节 加密后密文也是16字节</span></span><br><span class="line">        <span class="keyword">if</span> (bytes_read &lt; <span class="number">16</span>)	<span class="comment">//读取文件中数据最后不足16字节时，需要进行填充，</span></span><br><span class="line">        &#123;</span><br><span class="line">            ret = <span class="built_in">EVP_EncryptUpdate</span>(ctx, outdata, &amp;len, indata,(<span class="keyword">int</span>)bytes_read); <span class="comment">//len为加密后的密文长度返回值</span></span><br><span class="line">            ret = <span class="built_in">EVP_EncryptFinal_ex</span>(ctx, outdata + len, &amp;len);</span><br><span class="line">            bytes_write = <span class="built_in">fwrite</span>(outdata, <span class="number">1</span>, len, fw); <span class="comment">//将每次加密后的密文写入文件</span></span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            ret = <span class="built_in">EVP_EncryptUpdate</span>(ctx, outdata, &amp;len, indata,(<span class="keyword">int</span>)bytes_read); <span class="comment">//每次读取16字节明文并返回16字节的密文</span></span><br><span class="line">            bytes_write = <span class="built_in">fwrite</span>(outdata, <span class="number">1</span>, len, fw);<span class="comment">//将每次加密后的密文写入文件</span></span><br><span class="line">            len = <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">memset</span>(outdata, <span class="number">0</span>, <span class="built_in"><span class="keyword">sizeof</span></span>(outdata));</span><br><span class="line">        <span class="built_in">memset</span>(indata, <span class="number">0</span>, <span class="built_in"><span class="keyword">sizeof</span></span>(indata));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">EVP_CIPHER_CTX_free</span>(ctx);</span><br><span class="line">    <span class="built_in">fclose</span>(fr);</span><br><span class="line">    <span class="built_in">fclose</span>(fw);</span><br><span class="line">    <span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-2-AES解密"><a href="#3-2-AES解密" class="headerlink" title="3.2 AES解密"></a>3.2 AES解密</h4><p>​    <strong>其中，<em>EncryFilePath</em>为AES所加密的密文文件路径，<em>DecryFilePath</em>为存放解密后的明文文件路径，其余变量和函数基本与上面AES加密相对应。</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">GeneratorRsaKey::AESDecrypt</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* EncryFilePath, <span class="keyword">const</span> <span class="keyword">char</span>* DecryFilePath)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> indata[AES_BLOCK_SIZE];</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> outdata[<span class="number">32</span>];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> ret = <span class="number">0</span>, len = <span class="number">0</span>;</span><br><span class="line">    FILE* fw, * fr;</span><br><span class="line">    fr = <span class="built_in">fopen</span>(EncryFilePath, <span class="string">&quot;rb+&quot;</span>);</span><br><span class="line">    fw = <span class="built_in">fopen</span>(DecryFilePath, <span class="string">&quot;wb+&quot;</span>);</span><br><span class="line">    <span class="keyword">size_t</span> bytes_read, bytes_write;</span><br><span class="line">    EVP_CIPHER_CTX* ctx;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!(ctx = <span class="built_in">EVP_CIPHER_CTX_new</span>()))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> ret;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!(ret= <span class="built_in">EVP_DecryptInit_ex</span>(ctx, <span class="built_in">EVP_aes_128_cbc</span>(), <span class="literal">NULL</span>, key, ivec)))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> ret;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ret=<span class="built_in">EVP_CIPHER_CTX_set_padding</span>(ctx, EVP_PADDING_ZERO);</span><br><span class="line">    <span class="keyword">while</span> (<span class="number">1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        bytes_read = <span class="built_in">fread</span>(indata, <span class="number">1</span>, <span class="number">16</span>, fr);</span><br><span class="line">        <span class="keyword">if</span> (bytes_read &lt; <span class="number">16</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            ret = <span class="built_in">EVP_DecryptUpdate</span>(ctx, outdata, &amp;len, indata, (<span class="keyword">int</span>)bytes_read);</span><br><span class="line">            ret = <span class="built_in">EVP_DecryptFinal_ex</span>(ctx, outdata + len, &amp;len);</span><br><span class="line">            bytes_write = <span class="built_in">fwrite</span>(outdata, <span class="number">1</span>, len, fw);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            ret = <span class="built_in">EVP_DecryptUpdate</span>(ctx, outdata, &amp;len, indata, (<span class="keyword">int</span>)bytes_read);</span><br><span class="line">            bytes_write = <span class="built_in">fwrite</span>(outdata, <span class="number">1</span>, len, fw);</span><br><span class="line">            len = <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">memset</span>(outdata, <span class="number">0</span>, <span class="built_in"><span class="keyword">sizeof</span></span>(outdata));</span><br><span class="line">        <span class="built_in">memset</span>(indata, <span class="number">0</span>, <span class="built_in"><span class="keyword">sizeof</span></span>(indata));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">fclose</span>(fr);</span><br><span class="line">    <span class="built_in">fclose</span>(fw);</span><br><span class="line">    <span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4、SM4加密和解密"><a href="#4、SM4加密和解密" class="headerlink" title="4、SM4加密和解密"></a>4、SM4加密和解密</h3><p>​    <strong>与DES和AES算法相似，国密SM4算法是一种分组加密算法。其分组长度和密钥长度均为128bits。</strong></p>
+<p>​    <strong>SM4每次加密的明文为16个字节，输出的密文也为16个字节。</strong></p>
+<p>​    <strong>SM4加密和解密过程基本与上面AES一致，只需将函数<code>EVP_DecryptInit_ex(ctx, EVP_aes_128_cbc(), NULL, key, ivec)</code>中    <code>EVP_aes_128_cbc</code>替换    为<code>EVP_sm4_cbc</code>选择sm4加密模式即可。key和iv可以自行定义，但都得是16个字节。</strong></p>
+<p><em><strong>问题遗留：</strong></em></p>
+<p><strong>上面解密过程中数组<code>indata</code>为16字节大小，而<code>outdata</code>为32字节大小。</strong></p>
+<p><strong>因为在debug过程中，观察内存发现，加密时读取16字节的明文，加密的密文也是16字节，而解密时读取16字节的密文，解密后却得到32字节的明文，如果outdata数组还是16字节大小，会发生数组越界错误。至于为什么这样，目前没搞明白，但将outdata数组尽量设置的大点，可以避免该错误</strong>。</p>
+<p><strong>上述代码均通过加解密文件验证。</strong></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/blogger/tags/openssl/" rel="tag"># openssl</a>
+              <a href="/blogger/tags/c-c/" rel="tag"># c/c++</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/blogger/2021/12/31/RSA%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95/" rel="prev" title="RSA加密算法">
+      <i class="fa fa-chevron-left"></i> RSA加密算法
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81AES%E7%AE%97%E6%B3%95%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">1、AES算法简介</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81AES%E7%9A%84%E5%9F%BA%E6%9C%AC%E7%BB%93%E6%9E%84"><span class="nav-number">2.</span> <span class="nav-text">2、AES的基本结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E3%80%81AES%E7%9A%84%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="nav-number">3.</span> <span class="nav-text">3、AES的代码实现</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-AES%E5%8A%A0%E5%AF%86"><span class="nav-number">3.1.</span> <span class="nav-text">3.1 AES加密</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-AES%E8%A7%A3%E5%AF%86"><span class="nav-number">3.2.</span> <span class="nav-text">3.2 AES解密</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4%E3%80%81SM4%E5%8A%A0%E5%AF%86%E5%92%8C%E8%A7%A3%E5%AF%86"><span class="nav-number">4.</span> <span class="nav-text">4、SM4加密和解密</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="梁申麟"
+      src="/blogger/images/cafecat.png">
+  <p class="site-author-name" itemprop="name">梁申麟</p>
+  <div class="site-description" itemprop="description">吃好喝好，长生不老。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/blogger/archives/">
+        
+          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/blogger/tags/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/liangshenlin" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;liangshenlin" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:1065434172@qq.com" title="E-Mail → mailto:1065434172@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2021 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">梁申麟</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">15k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">13 分钟</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,0' opacity='0.5' zIndex='-1' count='150' src="/blogger/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/blogger/lib/anime.min.js"></script>
+  <script src="/blogger/lib/velocity/velocity.min.js"></script>
+  <script src="/blogger/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/blogger/js/utils.js"></script>
+
+<script src="/blogger/js/motion.js"></script>
+
+
+<script src="/blogger/js/schemes/pisces.js"></script>
+
+
+<script src="/blogger/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
+<!-- ҳ����С���� -->
+<script type="text/javascript" src="/js/src/clicklove.js"></script>
