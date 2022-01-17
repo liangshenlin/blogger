@@ -28,7 +28,7 @@
 <meta property="og:description" content="1、ECDSA简述ECDSA的全名是Elliptic Curve DSA，即椭圆曲线DSA。它是Digital Signature Algorithm (DSA)应用了椭圆曲线加密算法的变种。椭圆曲线算法的原理很复杂，但是具有很好的公开密钥算法特性，通过公钥无法逆向获得私钥。 ECDSA算法用于数字签名，是ECC与DSA的结合，整个签名过程与DSA类似，所不一样的是签名中采取的算法为ECC，最后签">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-12-31T08:42:15.000Z">
-<meta property="article:modified_time" content="2022-01-17T08:22:44.304Z">
+<meta property="article:modified_time" content="2022-01-17T08:54:17.731Z">
 <meta property="article:author" content="梁申麟">
 <meta property="article:tag" content="openssl">
 <meta property="article:tag" content="c&#x2F;c++">
@@ -205,7 +205,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-17 16:22:44" itemprop="dateModified" datetime="2022-01-17T16:22:44+08:00">2022-01-17</time>
+                <time title="修改时间：2022-01-17 16:54:17" itemprop="dateModified" datetime="2022-01-17T16:54:17+08:00">2022-01-17</time>
               </span>
 
           <br>
@@ -214,7 +214,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>8.9k</span>
+              <span>9k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -274,7 +274,7 @@
 <p>椭圆曲线数据结构：<code>EC_GROUP</code>，该结构不仅包含各个参数，还包含了各种算法；根据密钥参数<code>group</code>来生公私钥。</p>
 <p>对于<code>ECC</code>算法来说，仅仅知道公钥和私钥是不能调用<code>OpenSSL</code>自带的签名和验签API，还需要知道对应的椭圆曲线。<code>*BgUrgQQACg==*</code>  是椭圆曲线的关键参数，对应<code>secp256k1</code>标识。所生产得密钥中这参数便是用来确认椭圆曲线的。</p>
 <p>4、<code>EC_POINT *pub_key;</code></p>
-<p>EC_POINT，其中的大数X、Y和Z为雅克比投影坐标；</p>
+<p>EC_POINT，其中的大数X、Y和Z为雅克比投影坐标，向量；</p>
 <p>5、<code>BIGNUM *priv_key;</code></p>
 <p>私钥，为一个大数。</p>
 <p>6、<code>unsigned int enc_flag;</code></p>
@@ -287,10 +287,11 @@
 <p>9、<code>CRYPTO_RWLOCK *lock;</code></p>
 <p>加密时候的线程锁</p>
 <h3 id="3、通过ECDSA私钥进行签名"><a href="#3、通过ECDSA私钥进行签名" class="headerlink" title="3、通过ECDSA私钥进行签名"></a>3、通过ECDSA私钥进行签名</h3><p><strong>其中，hash、hashsize为其他算法（sha256/SM3）所生成的32位摘要。</strong></p>
-<p><strong>使用256位EC密钥进行签名使用的是DER 编码模式，所以比特币的签名长度是不定的，在71 - 73 个字节之间</strong></p>
+<p><strong>使用256位EC密钥进行签名使用的是DER 编码模式，所以签名长度是不定的，在71 - 73 个字节之间</strong></p>
 <p><strong>相关链接：</strong></p>
 <p> <a target="_blank" rel="noopener" href="https://www.thinbug.com/q/17269238">https://www.thinbug.com/q/17269238</a></p>
 <p><a target="_blank" rel="noopener" href="https://learnblockchain.cn/article/1038">https://learnblockchain.cn/article/1038</a></p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/422864492">https://zhuanlan.zhihu.com/p/422864492</a></p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">GeneratorRsaKey::ECDSAPrivkeySign</span><span class="params">(<span class="keyword">uint8_t</span>* hash_value, <span class="keyword">uint32_t</span> hash_size)</span> </span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span>* buffer;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> buf_len;</span><br><span class="line">    <span class="keyword">int</span> Ret = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> size = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">//-------------ECDSA加密------------------------------</span></span><br><span class="line">    EC_KEY* ec_key;</span><br><span class="line">    BIO* pBioKeyFile;</span><br><span class="line">    pBioKeyFile = <span class="built_in">BIO_new_file</span>(ECDSAPriKeyFileName, <span class="string">&quot;rb&quot;</span>);</span><br><span class="line">    ec_key = <span class="built_in">PEM_read_bio_ECPrivateKey</span>(pBioKeyFile, <span class="literal">NULL</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>);  <span class="comment">//读取私钥</span></span><br><span class="line">    <span class="keyword">if</span> (!ec_key)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;read ec_key err!\n&quot;</span>);</span><br><span class="line">        Ret = ERR_ECDSA;</span><br><span class="line">        <span class="keyword">goto</span> Failed;</span><br><span class="line">    &#125;</span><br><span class="line">    buf_len = <span class="built_in">ECDSA_size</span>(ec_key);<span class="comment">//获取ECC密钥大小字节数</span></span><br><span class="line">    buffer = (<span class="keyword">unsigned</span> <span class="keyword">char</span>*)<span class="built_in">malloc</span>(buf_len); <span class="comment">//分配内存，buffer用来保存签名后的数据</span></span><br><span class="line">    <span class="keyword">if</span> (!(Ret=<span class="built_in">ECDSA_sign</span>(<span class="number">0</span>, Hash, HashSize, buffer, &amp;buf_len, ec_key))) </span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;ECDSA_sign is err!\n&quot;</span>);</span><br><span class="line">        Ret = ERR_ECDSA;</span><br><span class="line">        <span class="keyword">goto</span> Failed;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (ec_key)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">EC_KEY_free</span>(ec_key);</span><br><span class="line">        ec_key = <span class="literal">NULL</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (pBioKeyFile)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">BIO_free</span>(pBioKeyFile);</span><br><span class="line">        pBioKeyFile = <span class="literal">NULL</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">Failed:</span><br><span class="line">    <span class="keyword">return</span> Ret;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p><strong>其中，ECDSA_size函数用来获取ECC密钥的大小，后面生成的签名数据大小也是由他来决定。</strong></p>
