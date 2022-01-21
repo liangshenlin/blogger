@@ -140,7 +140,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/blogger/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">9</span></a>
+    <a href="/blogger/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">10</span></a>
 
   </li>
   </ul>
@@ -166,6 +166,92 @@
 
           <div class="content index posts-expand">
             
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://liang-shenlin.gitee.io/blogger/2022/01/20/Linux-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blogger/images/cafecat.png">
+      <meta itemprop="name" content="梁申麟">
+      <meta itemprop="description" content="吃好喝好，长生不老。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="E0005105">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blogger/2022/01/20/Linux-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/" class="post-title-link" itemprop="url">Linux 常用命令</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-01-20 20:04:58" itemprop="dateCreated datePublished" datetime="2022-01-20T20:04:58+08:00">2022-01-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-01-21 14:32:13" itemprop="dateModified" datetime="2022-01-21T14:32:13+08:00">2022-01-21</time>
+              </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>228</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h5 id="1、grep"><a href="#1、grep" class="headerlink" title="1、grep"></a>1、grep</h5><p><code>grep -rn “name” ./</code></p>
+<p>在当前目录下递归查询包含字符串name的文件</p>
+<h5 id="2、cp"><a href="#2、cp" class="headerlink" title="2、cp"></a>2、cp</h5><p><code>cp file1 file2</code></p>
+<p>复制file的内容到file2中，如果file2已经存在，file2的内容会被file1覆盖。如果，file2不存在，则会创建file2</p>
+<p><code>cp file1 file2  dir1</code></p>
+<p>复制file1和file2到目录dir1，前提是dir1必须存在</p>
+<h5 id="3、cat"><a href="#3、cat" class="headerlink" title="3、cat"></a>3、cat</h5><p><code>cat 1.txt     2.txt    3.txt &gt; 4.txt</code></p>
+<p>将前三个文件的内容全部复制到第四个文件中去</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
       
   
   
@@ -391,7 +477,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-17 16:54:17" itemprop="dateModified" datetime="2022-01-17T16:54:17+08:00">2022-01-17</time>
+                <time title="修改时间：2022-01-18 10:39:21" itemprop="dateModified" datetime="2022-01-18T10:39:21+08:00">2022-01-18</time>
               </span>
 
           <br>
@@ -485,8 +571,8 @@
 
 <p>其中，<code>i2d_ECDSA_SIG</code>函数中有个关键函数：<code>ossl_encode_der_dsa_sig</code>该函数输出<code>ECDSA-Sig-Value</code>的DER编码至pkt，由pkt用来存储编码内容。</p>
 <h4 id="签名值数据结构"><a href="#签名值数据结构" class="headerlink" title="签名值数据结构"></a>签名值数据结构</h4><p>ECDSA 的签名结果表示为两项。 ECDSA 的签名结果数据结构定义在 <code>crypto\ec\ec_lcl.h</code> 中。</p>
-<p>一般情况，最后的结果<code>r</code>和<code>s</code>是用<code>asn1</code>格式封装的，至少的<code>TLS</code>签名和数字证书签名中是这样的，不是简单的<code>r+s</code>这样字节直接拼接.</p>
-<p>关于<code>asn1</code>编码方式可参见这边博客：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/NathanYang/p/9951282.html">https://www.cnblogs.com/NathanYang/p/9951282.html</a></p>
+<p>一般情况，最后的结果<code>r</code>和<code>s</code>是用<code>asn1</code>格式的<code>DER</code>编码封装的，至少的<code>TLS</code>签名和数字证书签名中是这样的，不是简单的<code>r+s</code>这样字节直接拼接.</p>
+<p>关于<code>der</code>编码方式可参见这边博客：<a target="_blank" rel="noopener" href="https://www.twblogs.net/a/5b7e3af92b71776838560af9/?lang=zh-cn">https://www.twblogs.net/a/5b7e3af92b71776838560af9/?lang=zh-cn</a></p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">ECDSA_SIG_st</span> &#123;</span></span><br><span class="line">    BIGNUM *r;</span><br><span class="line">    BIGNUM *s;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
 <p>这里使用SM3或者SHA256得到数据摘要后进行签名，以下面一个签名为例讲解DER编码后的签名序列。</p>
@@ -705,7 +791,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-12-31 16:28:04" itemprop="dateModified" datetime="2021-12-31T16:28:04+08:00">2021-12-31</time>
+                <time title="修改时间：2022-01-21 14:54:55" itemprop="dateModified" datetime="2022-01-21T14:54:55+08:00">2022-01-21</time>
               </span>
 
           <br>
@@ -714,7 +800,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>410</span>
+              <span>1k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -733,14 +819,20 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h3 id="1、fopen函数打开文件方式"><a href="#1、fopen函数打开文件方式" class="headerlink" title="1、fopen函数打开文件方式"></a>1、fopen函数打开文件方式</h3><p><strong>fopen的rb打开模式，b表示以二进制方式打开，在进行二进制文件读写时，要采用此方式打开文件，否则fread函数在进行读字节时，会出现未知错误。</strong></p>
-<h3 id="2、fopen在linux中进行文件读写"><a href="#2、fopen在linux中进行文件读写" class="headerlink" title="2、fopen在linux中进行文件读写"></a>2、fopen在linux中进行文件读写</h3><p><strong>fopen函数在Linux中打开文件时，一定要确认要是否有权限打开该文件，否则需要进行 <code>chmod 777 +文件名</code> 改变文件操作权限。</strong></p>
-<h3 id="3、关于报错：Run-Time-Check-Failure-2-Stack-around-the-variable-‘xxx’-was-corrupted的解决方式"><a href="#3、关于报错：Run-Time-Check-Failure-2-Stack-around-the-variable-‘xxx’-was-corrupted的解决方式" class="headerlink" title="3、关于报错：Run-Time Check Failure #2 - Stack around the variable ‘xxx’ was corrupted的解决方式"></a>3、关于报错：Run-Time Check Failure #2 - Stack around the variable ‘xxx’ was corrupted的解决方式</h3><p><img src="https://gitee.com/liang-shenlin/resource/raw/master/img/202112241611901.png" alt="image-20211224161104868"></p>
-<p><strong>这个报错字面意思是定义的变量xxx附近的内存被破坏了,在网上找到的解决方案共两种：</strong></p>
-<p><strong>a、堆栈溢出、内存访问越界</strong> </p>
-<p>​    <strong>该方法需要仔细检查数组下标访问的合法性。在经过检查后发现并无这类问题，此方案并未解决问题。</strong></p>
-<p><strong>b、将该局部变量设置为全局变量</strong></p>
-<p>​    <strong>采用该方法将bufer_hex由局部变量变为全局变量后，问题得到解决，但并未找到其问题根源所在。</strong></p>
+          <h4 id="1、fopen函数打开文件方式"><a href="#1、fopen函数打开文件方式" class="headerlink" title="1、fopen函数打开文件方式"></a>1、fopen函数打开文件方式</h4><p>fopen的rb打开模式，b表示以二进制方式打开，在进行二进制文件读写时，要采用此方式打开文件，否则fread函数在进行读字节时，会出现未知错误。</p>
+<h4 id="2、fopen在linux中进行文件读写"><a href="#2、fopen在linux中进行文件读写" class="headerlink" title="2、fopen在linux中进行文件读写"></a>2、fopen在linux中进行文件读写</h4><p>fopen函数在Linux中打开文件时，一定要确认要是否有权限打开该文件，否则需要进行 <code>chmod 777 +文件名</code> 改变文件操作权限。</p>
+<h4 id="3、关于报错：Run-Time-Check-Failure-2-Stack-around-the-variable-‘xxx’-was-corrupted的解决方式"><a href="#3、关于报错：Run-Time-Check-Failure-2-Stack-around-the-variable-‘xxx’-was-corrupted的解决方式" class="headerlink" title="3、关于报错：Run-Time Check Failure #2 - Stack around the variable ‘xxx’ was corrupted的解决方式"></a>3、关于报错：Run-Time Check Failure #2 - Stack around the variable ‘xxx’ was corrupted的解决方式</h4><p><img src="https://gitee.com/liang-shenlin/resource/raw/master/img/202112241611901.png" alt="image-20211224161104868"></p>
+<p>这个报错字面意思是定义的变量xxx附近的内存被破坏了,在网上找到的解决方案共两种：</p>
+<p>a、堆栈溢出、内存访问越界 </p>
+<p>​    该方法需要仔细检查数组下标访问的合法性。在经过检查后发现并无这类问题，此方案并未解决问题。</p>
+<p>b、将该局部变量设置为全局变量</p>
+<p>​    采用该方法将bufer_hex由局部变量变为全局变量后，问题得到解决，但并未找到其问题根源所在。**</p>
+<h4 id="4、c-中string转字符数组"><a href="#4、c-中string转字符数组" class="headerlink" title="4、c++中string转字符数组"></a>4、c++中string转字符数组</h4><p>​    最近在写一个功能是通过读取txt配置文件来设置一些代码参数配置。通过<code>getline</code>函数可以从文件中一行一行地读取数据，每行数据为一条参数信息，长度从几字节到几十字节不等。因此，需要通过c++中的string来进行接收不定长数据。原代码左值为<code>const char *</code> 类型，不能直接通过<code>string</code>进行赋值，因此需要将<code>string</code>转为<code>char</code>数组，问题也出在这里。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">char</span> * ch;</span><br><span class="line">string str=<span class="string">&quot;1234&quot;</span>;</span><br><span class="line">ch=str.<span class="built_in">c_str</span>();</span><br></pre></td></tr></table></figure>
+
+<p>​    在拿到<code>string str</code>时，可以通过<code>str.c_str()</code>函数将字符串转为字符数组，返回一个指向字符数组的指针。如上所提，原代码左值为<code>const char*</code>类型，但却不能直接用指针<code>ch</code>作为右值进行赋值。因为<code>ch</code>指向的内容随着所在函数结束会进行析构，最后会变成垃圾，要想拿到其指向的数据并完成赋值，需要利用<code>strcpy</code>函数进行复制后再使用。</p>
+<h4 id="5、c-中实现trim函数去除string字符串中的空格和tab"><a href="#5、c-中实现trim函数去除string字符串中的空格和tab" class="headerlink" title="5、c++中实现trim函数去除string字符串中的空格和tab"></a>5、c++中实现trim函数去除string字符串中的空格和tab</h4><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> string <span class="title">trim</span><span class="params">(string &amp;s)</span> </span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">const</span> string&amp; delim = <span class="string">&quot; \t\r&quot;</span>;</span><br><span class="line">    s.<span class="built_in">erase</span>(<span class="number">0</span>, s.<span class="built_in">find_first_not_of</span>(delim));</span><br><span class="line">    s.<span class="built_in">erase</span>(s.<span class="built_in">find_last_not_of</span>(delim) + <span class="number">1</span>);</span><br><span class="line">    <span class="keyword">return</span> s;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 
       
     </div>
@@ -1099,7 +1191,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/blogger/archives/">
         
-          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-count">10</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1150,12 +1242,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">19k</span>
+    <span title="站点总字数">20k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">17 分钟</span>
+    <span title="站点阅读时长">18 分钟</span>
 </div>
 
         

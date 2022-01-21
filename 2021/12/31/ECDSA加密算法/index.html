@@ -28,7 +28,7 @@
 <meta property="og:description" content="1、ECDSA简述ECDSA的全名是Elliptic Curve DSA，即椭圆曲线DSA。它是Digital Signature Algorithm (DSA)应用了椭圆曲线加密算法的变种。椭圆曲线算法的原理很复杂，但是具有很好的公开密钥算法特性，通过公钥无法逆向获得私钥。 ECDSA算法用于数字签名，是ECC与DSA的结合，整个签名过程与DSA类似，所不一样的是签名中采取的算法为ECC，最后签">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-12-31T08:42:15.000Z">
-<meta property="article:modified_time" content="2022-01-17T08:54:17.731Z">
+<meta property="article:modified_time" content="2022-01-18T02:39:21.838Z">
 <meta property="article:author" content="梁申麟">
 <meta property="article:tag" content="openssl">
 <meta property="article:tag" content="c&#x2F;c++">
@@ -144,7 +144,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/blogger/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">9</span></a>
+    <a href="/blogger/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">10</span></a>
 
   </li>
   </ul>
@@ -205,7 +205,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-17 16:54:17" itemprop="dateModified" datetime="2022-01-17T16:54:17+08:00">2022-01-17</time>
+                <time title="修改时间：2022-01-18 10:39:21" itemprop="dateModified" datetime="2022-01-18T10:39:21+08:00">2022-01-18</time>
               </span>
 
           <br>
@@ -299,8 +299,8 @@
 
 <p>其中，<code>i2d_ECDSA_SIG</code>函数中有个关键函数：<code>ossl_encode_der_dsa_sig</code>该函数输出<code>ECDSA-Sig-Value</code>的DER编码至pkt，由pkt用来存储编码内容。</p>
 <h4 id="签名值数据结构"><a href="#签名值数据结构" class="headerlink" title="签名值数据结构"></a>签名值数据结构</h4><p>ECDSA 的签名结果表示为两项。 ECDSA 的签名结果数据结构定义在 <code>crypto\ec\ec_lcl.h</code> 中。</p>
-<p>一般情况，最后的结果<code>r</code>和<code>s</code>是用<code>asn1</code>格式封装的，至少的<code>TLS</code>签名和数字证书签名中是这样的，不是简单的<code>r+s</code>这样字节直接拼接.</p>
-<p>关于<code>asn1</code>编码方式可参见这边博客：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/NathanYang/p/9951282.html">https://www.cnblogs.com/NathanYang/p/9951282.html</a></p>
+<p>一般情况，最后的结果<code>r</code>和<code>s</code>是用<code>asn1</code>格式的<code>DER</code>编码封装的，至少的<code>TLS</code>签名和数字证书签名中是这样的，不是简单的<code>r+s</code>这样字节直接拼接.</p>
+<p>关于<code>der</code>编码方式可参见这边博客：<a target="_blank" rel="noopener" href="https://www.twblogs.net/a/5b7e3af92b71776838560af9/?lang=zh-cn">https://www.twblogs.net/a/5b7e3af92b71776838560af9/?lang=zh-cn</a></p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">ECDSA_SIG_st</span> &#123;</span></span><br><span class="line">    BIGNUM *r;</span><br><span class="line">    BIGNUM *s;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
 <p>这里使用SM3或者SHA256得到数据摘要后进行签名，以下面一个签名为例讲解DER编码后的签名序列。</p>
@@ -409,7 +409,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/blogger/archives/">
         
-          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-count">10</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -460,12 +460,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">19k</span>
+    <span title="站点总字数">20k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">17 分钟</span>
+    <span title="站点阅读时长">18 分钟</span>
 </div>
 
         

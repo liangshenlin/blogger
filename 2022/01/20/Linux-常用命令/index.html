@@ -20,17 +20,19 @@
     var CONFIG = {"hostname":"liang-shenlin.gitee.io","root":"/blogger/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="吃好喝好，长生不老。">
-<meta property="og:type" content="website">
-<meta property="og:title" content="E0005105">
-<meta property="og:url" content="http://liang-shenlin.gitee.io/blogger/archives/2022/index.html">
+  <meta name="description" content="1、grepgrep -rn “name” .&#x2F; 在当前目录下递归查询包含字符串name的文件 2、cpcp file1 file2 复制file的内容到file2中，如果file2已经存在，file2的内容会被file1覆盖。如果，file2不存在，则会创建file2 cp file1 file2  dir1 复制file1和file2到目录dir1，前提是dir1必须存在 3、catcat 1">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux 常用命令">
+<meta property="og:url" content="http://liang-shenlin.gitee.io/blogger/2022/01/20/Linux-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/index.html">
 <meta property="og:site_name" content="E0005105">
-<meta property="og:description" content="吃好喝好，长生不老。">
+<meta property="og:description" content="1、grepgrep -rn “name” .&#x2F; 在当前目录下递归查询包含字符串name的文件 2、cpcp file1 file2 复制file的内容到file2中，如果file2已经存在，file2的内容会被file1覆盖。如果，file2不存在，则会创建file2 cp file1 file2  dir1 复制file1和file2到目录dir1，前提是dir1必须存在 3、catcat 1">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-01-20T12:04:58.000Z">
+<meta property="article:modified_time" content="2022-01-21T06:32:13.985Z">
 <meta property="article:author" content="梁申麟">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://liang-shenlin.gitee.io/blogger/archives/2022/">
+<link rel="canonical" href="http://liang-shenlin.gitee.io/blogger/2022/01/20/Linux-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">
 
 
 <script id="page-configurations">
@@ -38,12 +40,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>归档 | E0005105</title>
+  <title>Linux 常用命令 | E0005105</title>
   
 
 
@@ -164,70 +166,104 @@
         <div class="content-wrap">
           
 
-          <div class="content archive">
+          <div class="content post posts-expand">
             
 
+    
   
   
-  
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <span class="collection-header">嗯..! 目前共计 10 篇日志。 继续努力。</span>
-      </div>
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://liang-shenlin.gitee.io/blogger/2022/01/20/Linux-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blogger/images/cafecat.png">
+      <meta itemprop="name" content="梁申麟">
+      <meta itemprop="description" content="吃好喝好，长生不老。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="E0005105">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Linux 常用命令
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-01-20 20:04:58" itemprop="dateCreated datePublished" datetime="2022-01-20T20:04:58+08:00">2022-01-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-01-21 14:32:13" itemprop="dateModified" datetime="2022-01-21T14:32:13+08:00">2022-01-21</time>
+              </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>228</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <span class="collection-header">2022</span>
-    </div>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2022-01-20T20:04:58+08:00"
-              content="2022-01-20">
-          01-20
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/blogger/2022/01/20/Linux-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/" itemprop="url">
-            <span itemprop="name">Linux 常用命令</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2022-01-06T15:54:02+08:00"
-              content="2022-01-06">
-          01-06
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/blogger/2022/01/06/AES%E5%92%8CSM4%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95/" itemprop="url">
-            <span itemprop="name">AES和SM4加密算法</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
+        <h5 id="1、grep"><a href="#1、grep" class="headerlink" title="1、grep"></a>1、grep</h5><p><code>grep -rn “name” ./</code></p>
+<p>在当前目录下递归查询包含字符串name的文件</p>
+<h5 id="2、cp"><a href="#2、cp" class="headerlink" title="2、cp"></a>2、cp</h5><p><code>cp file1 file2</code></p>
+<p>复制file的内容到file2中，如果file2已经存在，file2的内容会被file1覆盖。如果，file2不存在，则会创建file2</p>
+<p><code>cp file1 file2  dir1</code></p>
+<p>复制file1和file2到目录dir1，前提是dir1必须存在</p>
+<h5 id="3、cat"><a href="#3、cat" class="headerlink" title="3、cat"></a>3、cat</h5><p><code>cat 1.txt     2.txt    3.txt &gt; 4.txt</code></p>
+<p>将前三个文件的内容全部复制到第四个文件中去</p>
 
     </div>
-  </div>
-  
-  
-  
 
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/blogger/2022/01/06/AES%E5%92%8CSM4%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95/" rel="prev" title="AES和SM4加密算法">
+      <i class="fa fa-chevron-left"></i> AES和SM4加密算法
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
   
 
 
@@ -280,6 +316,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-5"><a class="nav-link" href="#1%E3%80%81grep"><span class="nav-number">1.</span> <span class="nav-text">1、grep</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2%E3%80%81cp"><span class="nav-number">2.</span> <span class="nav-text">2、cp</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3%E3%80%81cat"><span class="nav-number">3.</span> <span class="nav-text">3、cat</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
