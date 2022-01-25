@@ -791,7 +791,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-21 14:54:55" itemprop="dateModified" datetime="2022-01-21T14:54:55+08:00">2022-01-21</time>
+                <time title="修改时间：2022-01-25 16:41:20" itemprop="dateModified" datetime="2022-01-25T16:41:20+08:00">2022-01-25</time>
               </span>
 
           <br>
@@ -800,7 +800,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>1k</span>
+              <span>1.2k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -827,13 +827,16 @@
 <p>​    该方法需要仔细检查数组下标访问的合法性。在经过检查后发现并无这类问题，此方案并未解决问题。</p>
 <p>b、将该局部变量设置为全局变量</p>
 <p>​    采用该方法将bufer_hex由局部变量变为全局变量后，问题得到解决，但并未找到其问题根源所在。**</p>
-<h4 id="4、c-中string转字符数组"><a href="#4、c-中string转字符数组" class="headerlink" title="4、c++中string转字符数组"></a>4、c++中string转字符数组</h4><p>​    最近在写一个功能是通过读取txt配置文件来设置一些代码参数配置。通过<code>getline</code>函数可以从文件中一行一行地读取数据，每行数据为一条参数信息，长度从几字节到几十字节不等。因此，需要通过c++中的string来进行接收不定长数据。原代码左值为<code>const char *</code> 类型，不能直接通过<code>string</code>进行赋值，因此需要将<code>string</code>转为<code>char</code>数组，问题也出在这里。</p>
+<h4 id="4、c-中string转字符数组-坑1"><a href="#4、c-中string转字符数组-坑1" class="headerlink" title="4、c++中string转字符数组 坑1"></a>4、c++中string转字符数组 坑1</h4><p>​    最近在写一个功能是通过读取txt配置文件来设置一些代码参数配置。通过<code>getline</code>函数可以从文件中一行一行地读取数据，每行数据为一条参数信息，长度从几字节到几十字节不等。因此，需要通过c++中的string来进行接收不定长数据。原代码左值为<code>const char *</code> 类型，不能直接通过<code>string</code>进行赋值，因此需要将<code>string</code>转为<code>char</code>数组，问题也出在这里。</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">char</span> * ch;</span><br><span class="line">string str=<span class="string">&quot;1234&quot;</span>;</span><br><span class="line">ch=str.<span class="built_in">c_str</span>();</span><br></pre></td></tr></table></figure>
 
 <p>​    在拿到<code>string str</code>时，可以通过<code>str.c_str()</code>函数将字符串转为字符数组，返回一个指向字符数组的指针。如上所提，原代码左值为<code>const char*</code>类型，但却不能直接用指针<code>ch</code>作为右值进行赋值。因为<code>ch</code>指向的内容随着所在函数结束会进行析构，最后会变成垃圾，要想拿到其指向的数据并完成赋值，需要利用<code>strcpy</code>函数进行复制后再使用。</p>
-<h4 id="5、c-中实现trim函数去除string字符串中的空格和tab"><a href="#5、c-中实现trim函数去除string字符串中的空格和tab" class="headerlink" title="5、c++中实现trim函数去除string字符串中的空格和tab"></a>5、c++中实现trim函数去除string字符串中的空格和tab</h4><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> string <span class="title">trim</span><span class="params">(string &amp;s)</span> </span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">const</span> string&amp; delim = <span class="string">&quot; \t\r&quot;</span>;</span><br><span class="line">    s.<span class="built_in">erase</span>(<span class="number">0</span>, s.<span class="built_in">find_first_not_of</span>(delim));</span><br><span class="line">    s.<span class="built_in">erase</span>(s.<span class="built_in">find_last_not_of</span>(delim) + <span class="number">1</span>);</span><br><span class="line">    <span class="keyword">return</span> s;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="5、c-中string转字符数组-坑2"><a href="#5、c-中string转字符数组-坑2" class="headerlink" title="5、c++中string转字符数组 坑2"></a>5、c++中string转字符数组 坑2</h4><p>字符串与数组的区别是末尾多个\0，而在调用str.length()函数计算其长度时则不会将\0计算在内。因此若要将其转为字符数组，所需内存空间为size+1；否则指针ch所指向的这块内存区域，在释放时会报错。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">char</span> * ch;</span><br><span class="line">string str=<span class="string">&quot;1234&quot;</span>;</span><br><span class="line">ch=<span class="keyword">new</span> <span class="keyword">char</span> [str.<span class="built_in">length</span>()+<span class="number">1</span>]</span><br><span class="line"><span class="built_in">strcpy</span>(ch,str.<span class="built_in">c_str</span>());</span><br></pre></td></tr></table></figure>
 
+<h4 id="6、c-中实现trim函数去除string字符串中的空格和tab"><a href="#6、c-中实现trim函数去除string字符串中的空格和tab" class="headerlink" title="6、c++中实现trim函数去除string字符串中的空格和tab"></a>6、c++中实现trim函数去除string字符串中的空格和tab</h4><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> string <span class="title">trim</span><span class="params">(string &amp;s)</span> </span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">const</span> string&amp; delim = <span class="string">&quot; \t\r&quot;</span>;</span><br><span class="line">    s.<span class="built_in">erase</span>(<span class="number">0</span>, s.<span class="built_in">find_first_not_of</span>(delim));</span><br><span class="line">    s.<span class="built_in">erase</span>(s.<span class="built_in">find_last_not_of</span>(delim) + <span class="number">1</span>);</span><br><span class="line">    <span class="keyword">return</span> s;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
+<h4 id=""><a href="#" class="headerlink" title=""></a></h4>
       
     </div>
 
